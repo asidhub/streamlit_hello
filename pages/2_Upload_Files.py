@@ -24,7 +24,7 @@ route_file = 'route.txt'
 
 try:
     # s3_client.upload_file(latlon_file, S3_BUCKET_NAME, REMOTE_DIR+latlon_file)
-    s3_client.upload_file(latlon_file, S3_BUCKET_NAME, REMOTE_DIR+route_file)
+    s3_client.upload_file(route_file, S3_BUCKET_NAME, REMOTE_DIR+route_file)
     st.write('Processed data uploaded')
 except Exception as e:
      st.error(f"Error: {e}")
