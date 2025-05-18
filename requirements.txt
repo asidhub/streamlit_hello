@@ -1,2 +1,6 @@
 s3fs
 st-files-connection
+boto3
+rosbag
+yaml
+pyproj
