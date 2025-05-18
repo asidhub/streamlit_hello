@@ -5,19 +5,20 @@ import pandas as pd
 import yaml, pyproj
 # from threading import RLock
 from lib_path_functions import resample_route, smooth_waypoints, write_waypoint_file
-import altair as alt
-from bokeh.plotting import figure
+# from bokeh.plotting import figure
+import plotly.express as px
 
 latlon_file = 'latlon_processed.txt'
 map_config_file = 'map_params.yaml'
 route_file = 'route.txt'
 wp_file = 'waypoints.txt'
 
-path_spacing = st.number_input("Spacing", value=1.0, min_value=0.0)
-zero_speed = st.number_input("Zero speed", value=1.5, min_value=0.0)
-path_end_tol = st.number_input("Path end tol.", value=0.1, min_value=0.1)
-smoothing_frame = st.number_input("smoothing frame", value=1.0, min_value=1.0)
-smoothing_variance = st.number_input("smoothing factor", value=0.1, min_value=0.01)
+with st.sidebar:
+    path_spacing = st.number_input("Spacing", value=1.0, min_value=0.0)
+    zero_speed = st.number_input("Zero speed", value=1.5, min_value=0.0)
+    path_end_tol = st.number_input("Path end tol.", value=0.1, min_value=0.1)
+    smoothing_frame = st.number_input("smoothing frame", value=1.0, min_value=1.0)
+    smoothing_variance = st.number_input("smoothing factor", value=0.1, min_value=0.01)
 
 try:
     # timestamps, latitude, longitude, speed = read_inspva(bagfile, gps_topic)
@@ -57,14 +58,33 @@ try:
 
     # # speed dataframe
     # speed_df = pd.DataFrame(np.column_stack((dist_rs, speed_rs)), columns=["dist", "speed"])
+    speed_df = pd.DataFrame({'dist': d_fit, 'speed': v_fit})
 
     # map
-    st.map(latlon_df, latitude="lat", longitude="lon", size="size")
+    st.map(latlon_df, latitude="lat", longitude="lon", size="size", use_container_width=False, width=800, height=800)
 
     # bokey plot
-    p = figure(title="Speed vs. Distance", x_axis_label="Distance (m)", y_axis_label="Speed (m/s)")
-    p.line(d_fit, v_fit, legend_label="", line_width=2, line_color='blue')
-    st.bokeh_chart(p)
+    # p = figure(title="Speed vs. Distance", x_axis_label="Distance (m)", y_axis_label="Speed (m/s)")
+    # p.line(d_fit, v_fit, legend_label="", line_width=2, line_color='blue')
+    # st.bokeh_chart(p)
+
+    # plotly plot
+    fig = px.scatter(speed_df, x='dist', y='speed', title='Speed vs. Distance')
+    fig.update_layout(
+        xaxis_title="Distance (m)",
+        yaxis_title="Speed (m/s)",
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        xaxis=dict(
+            showgrid=True,
+            gridcolor='lightgray',
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='lightgray',
+        ),
+    )
+    st.plotly_chart(fig, use_container_width=False, width=800, height=500)
     
 except Exception as e:
      st.error(f"Error: {e}")

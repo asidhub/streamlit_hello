@@ -11,8 +11,9 @@ latlon_file = 'latlon.txt'
 map_config_file = 'map_params.yaml'
 latlon_file_processed = 'latlon_processed.txt'
 
-downsample_spacing = st.number_input("Spacing", value=2.0, min_value=2.0)
-trim_end = st.number_input("Trim end of path", value=0, min_value=0)
+with st.sidebar:
+    downsample_spacing = st.number_input("Spacing", value=2.0, min_value=2.0)
+    trim_end = st.number_input("Trim end of path", value=0, min_value=0)
 
 try:
     # timestamps, latitude, longitude, speed = read_inspva(bagfile, gps_topic)
