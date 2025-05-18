@@ -3,6 +3,3 @@ st-files-connection
 boto3
 pyyaml
 pyproj
---extra-index-url https://rospypi.github.io/simple/
-rospy
-rosbag
