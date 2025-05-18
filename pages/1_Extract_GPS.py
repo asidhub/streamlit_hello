@@ -2,7 +2,7 @@
 import streamlit as st
 import numpy as np
 from st_files_connection import FilesConnection
-import boto3, rosbag, yaml, pyproj
+import boto3, yaml, pyproj
 from io import BytesIO
 
 def read_inspva(bagfile, gps_topic):
