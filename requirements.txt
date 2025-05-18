@@ -1,5 +1,8 @@
 s3fs
 st-files-connection
-rosbag
-yaml
+boto3
+pyyaml
 pyproj
+--extra-index-url https://rospypi.github.io/simple/
+rospy
+rosbag
