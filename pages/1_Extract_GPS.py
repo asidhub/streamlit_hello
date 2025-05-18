@@ -1,62 +1,18 @@
 #!/usr/bin/env python
 import streamlit as st
 import numpy as np
-from st_files_connection import FilesConnection
-import boto3, yaml, pyproj
-from io import BytesIO
-
-def read_inspva(bagfile, gps_topic):
-	import rosbag
-	timestamps, latitude, longitude, speed = [], [], [], []
-	bag = rosbag.Bag(bagfile)
-	for topic, msg, t in bag.read_messages(topics=[gps_topic]):
-		#t_topic = msg.header.stamp.secs + 1E-9*msg.header.stamp.nsecs - t0
-		t_topic = t.to_sec()
-		if topic == gps_topic:
-			latitude.append(msg.latitude)
-			longitude.append(msg.longitude)
-			north_velocity = msg.north_velocity
-			east_velocity = msg.east_velocity
-			speed.append(np.hypot(north_velocity, east_velocity))
-			timestamps.append(t_topic)
-	return timestamps, latitude, longitude, speed
-
-def downsample_path(x, y, spacing=1.0):
-	x_downsampled, y_downsampled = [], []
-	coords_downsampled = []
-	indices_downsampled = []
-
-	for i in range(0, len(x)):                
-		if i == 0: # first point so just accept whatever gps position and init pp
-			x_downsampled.append(x[i])
-			y_downsampled.append(y[i])
-			x_prev, y_prev = x[i], y[i]
-			coords_downsampled.append((x[i], y[i]))
-			indices_downsampled.append(i)
-
-		elif i == len(x)-1: # if last point, just append
-			x_downsampled.append(x[i])
-			y_downsampled.append(y[i])
-			coords_downsampled.append((x[i], y[i]))
-			indices_downsampled.append(i)
-		
-		else: # if not first or last then check delta path
-			dx = np.hypot(x[i]-x_prev, y[i]-y_prev)
-			if dx >= spacing: # append if path spacing exceeds desired spacing
-				x_downsampled.append(x[i])
-				y_downsampled.append(y[i])
-				coords_downsampled.append((x[i], y[i]))
-				indices_downsampled.append(i)
-				x_prev, y_prev = x[i], y[i]
-
-	return x_downsampled, y_downsampled, coords_downsampled, indices_downsampled
+import pandas as pd
+import yaml, pyproj
+from lib_path_functions import downsample_path
 
 # bagfile = 'raw.bag'
 # gps_topic = '/novatel/oem7/inspva'
 latlon_file = 'latlon.txt'
 map_config_file = 'map_params.yaml'
-downsample_spacing = 1.0
-route_file = 'route.txt'
+latlon_file_processed = 'latlon_processed.txt'
+
+downsample_spacing = st.number_input("Spacing", value=2.0, min_value=2.0)
+trim_end = st.number_input("Trim end of path", value=0, min_value=0)
 
 try:
     # timestamps, latitude, longitude, speed = read_inspva(bagfile, gps_topic)
@@ -77,11 +33,24 @@ try:
 
     # downsample and resample
     east_ds, north_ds, coords_ds, ind_ds = downsample_path(east, north, spacing=downsample_spacing)
-	
-    # write route file
-    np.savetxt(route_file, np.column_stack((east_ds, north_ds)), fmt='%.3f', delimiter=',')
-    st.write(f'Route file saved at: {route_file}')
-	
+    lat_ds, lon_ds, speed_ds, timestamps_ds = lat[ind_ds], lon[ind_ds], speed[ind_ds], timestamps[ind_ds]
+
+    # trim
+    i1 = 0
+    i2 = len(ind_ds) - trim_end
+    east_ds, north_ds, lat_ds, lon_ds, speed_ds, timestamps_ds = \
+        east_ds[i1:i2], north_ds[i1:i2], lat_ds[i1:i2], lon_ds[i1:i2], speed_ds[i1:i2], timestamps_ds[i1:i2]
+    
+    # write processed global file
+    pt_size = np.array(lat_ds)*0.0+1.0
+    pt_size[0] = 2.0
+    latlon_df = pd.DataFrame(np.column_stack((lat_ds, lon_ds, pt_size)), columns=["lat", "lon", "size"])
+    np.savetxt(latlon_file_processed, np.column_stack((timestamps_ds, lat_ds, lon_ds, east_ds, north_ds, speed_ds)), fmt='%.7f', delimiter=',')
+    st.write(f'Processed global coords saved at: {latlon_file_processed}')
+
+    # map
+    st.map(latlon_df, latitude="lat", longitude="lon", size="size")
+    
 except Exception as e:
      st.error(f"Error: {e}")
 
