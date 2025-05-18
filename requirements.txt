@@ -5,6 +5,3 @@ pyyaml
 pyproj
 plotly
 scipy
---extra-index-url https://rospypi.github.io/simple/
-rospy
-rosbag
