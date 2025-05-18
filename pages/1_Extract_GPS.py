@@ -51,17 +51,17 @@ def downsample_path(x, y, spacing=1.0):
 
 	return x_downsampled, y_downsampled, coords_downsampled, indices_downsampled
 
-bagfile = 'raw.bag'
-gps_topic = '/novatel/oem7/inspva'
+# bagfile = 'raw.bag'
+# gps_topic = '/novatel/oem7/inspva'
 latlon_file = 'latlon.txt'
 map_config_file = 'map_params.yaml'
 downsample_spacing = 1.0
 route_file = 'route.txt'
 
 try:
-    timestamps, latitude, longitude, speed = read_inspva(bagfile, gps_topic)
-    np.savetxt(latlon_file, np.column_stack((timestamps, latitude, longitude, speed)), fmt='%.8f', delimiter=',')
-    st.write(f'Global coords file saved at: {latlon_file}')
+    # timestamps, latitude, longitude, speed = read_inspva(bagfile, gps_topic)
+    # np.savetxt(latlon_file, np.column_stack((timestamps, latitude, longitude, speed)), fmt='%.8f', delimiter=',')
+    # st.write(f'Global coords file saved at: {latlon_file}')
 
     with open(map_config_file, 'r') as stream:
         config = yaml.safe_load(stream)
