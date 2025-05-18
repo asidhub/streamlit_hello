@@ -14,7 +14,7 @@ AWS_ACCESS_KEY_ID = st.secrets["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = st.secrets["AWS_SECRET_ACCESS_KEY"]
 S3_BUCKET_NAME = "amads"
 REMOTE_DIR = "data/map/"
-FILE_KEYS = ["raw.bag", "map_params.yaml"]
+FILE_KEYS = ["latlon.txt", "map_params.yaml"]
 
 # Initialize S3 client
 s3_client = boto3.client(
