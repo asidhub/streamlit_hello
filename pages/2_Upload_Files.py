@@ -19,11 +19,11 @@ s3_client = boto3.client(
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
 
-latlon_file = 'latlon.txt'
+# latlon_file = 'latlon.txt'
 route_file = 'route.txt'
 
 try:
-    s3_client.upload_file(latlon_file, S3_BUCKET_NAME, REMOTE_DIR+latlon_file)
+    # s3_client.upload_file(latlon_file, S3_BUCKET_NAME, REMOTE_DIR+latlon_file)
     s3_client.upload_file(latlon_file, S3_BUCKET_NAME, REMOTE_DIR+route_file)
     st.write('Processed data uploaded')
 except Exception as e:
