@@ -2,7 +2,6 @@
 import streamlit as st
 from st_files_connection import FilesConnection
 import boto3
-import rosbag
 
 st.set_page_config(
     page_title="Hello",
