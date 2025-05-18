@@ -4,7 +4,7 @@ from st_files_connection import FilesConnection
 import boto3
 
 st.set_page_config(
-    page_title="Hello",
+    page_title="Path Processng",
     page_icon="👋",
 )
 st.write("# Path Processing! 👋")
