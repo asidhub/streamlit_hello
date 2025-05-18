@@ -3,7 +3,7 @@ st-files-connection
 boto3
 pyyaml
 pyproj
-bokeh==2.4.3
+plotly
 scipy
 --extra-index-url https://rospypi.github.io/simple/
 rospy
